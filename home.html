@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping List App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .input-container input {
+            flex: 1;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .input-container button {
+            padding: 8px 12px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .input-container button:hover {
+            background-color: #218838;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            display: flex;
+            justify-content: space-between;
+            background: #f9f9f9;
+            padding: 8px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        li span {
+            flex: 1;
+        }
+        li span.crossed {
+            text-decoration: line-through;
+            color: #888;
+        }
+        li button {
+            background: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+        }
+        li button:hover {
+            background: #c82333;
+        }
+        .clear-btn, .finish-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-top: 10px;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .clear-btn {
+            background-color: #007bff;
+        }
+        .clear-btn:hover {
+            background-color: #0056b3;
+        }
+        .finish-btn {
+            background-color: #28a745;
+        }
+        .finish-btn:hover {
+            background-color: #218838;
+        }
+        #total-price {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Shopping List</h1>
+        <div class="input-container">
+            <input type="text" id="item-input" placeholder="Enter item">
+            <input type="number" id="price-input" placeholder="Enter price" min="0" step="0.01">
+            <button onclick="addItem()">Add</button>
+        </div>
+        <ul id="shopping-list"></ul>
+        <button class="clear-btn" onclick="clearList()">Clear List</button>
+        <button class="finish-btn" onclick="finishShopping()">Finish</button>
+        <div id="total-price"></div>
+    </div>
+
+    <script>
+        let totalPrice = 0;
+
+        function addItem() {
+            const itemInput = document.getElementById('item-input');
+            const priceInput = document.getElementById('price-input');
+            const itemText = itemInput.value.trim();
+            const priceText = parseFloat(priceInput.value).toFixed(2);
+
+            if (itemText === '' || isNaN(priceText)) {
+                alert('Please enter a valid item and price.');
+                return;
+            }
+
+            const li = document.createElement('li');
+
+            const itemSpan = document.createElement('span');
+            itemSpan.textContent = `${itemText} - $${priceText}`;
+
+            itemSpan.onclick = function () {
+                itemSpan.classList.toggle('crossed');
+            };
+
+            li.appendChild(itemSpan);
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.onclick = function () {
+                totalPrice -= parseFloat(priceText);
+                updateTotalPriceDisplay();
+                li.remove();
+            };
+
+            li.appendChild(deleteButton);
+
+            document.getElementById('shopping-list').appendChild(li);
+
+            totalPrice += parseFloat(priceText);
+            updateTotalPriceDisplay();
+
+            itemInput.value = '';
+            priceInput.value = '';
+        }
+
+        function clearList() {
+            const list = document.getElementById('shopping-list');
+            list.innerHTML = '';
+            totalPrice = 0;
+            updateTotalPriceDisplay();
+        }
+
+        function finishShopping() {
+            const listItems = document.querySelectorAll('#shopping-list li span');
+            const summary = Array.from(listItems).map(item => item.textContent).join('\n');
+            alert(`Shopping List:\n${summary}\n\nTotal Price: $${totalPrice.toFixed(2)}`);
+        }
+
+        function updateTotalPriceDisplay() {
+            const totalPriceElement = document.getElementById('total-price');
+            totalPriceElement.textContent = `Total Price: $${totalPrice.toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
